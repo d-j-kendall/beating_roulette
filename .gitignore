@@ -1,2 +1,3 @@
 #Ignore cifar data repo
 Examples/classification_problem/dustin/data/
+Examples/vgg-19/dustin/Cat_Dog_data/
