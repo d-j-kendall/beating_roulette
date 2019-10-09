@@ -23,6 +23,7 @@ class StateVector:
                 json_detection = json.loads(det)
             else:
                 print("File finished")
+                break
             if len(json_detection) > 0:
                 for inst in json_detection:
                     if inst["cls"] == 0:
@@ -42,6 +43,7 @@ class StateVector:
                     if last_ball['w'] is not None:
                         ball['a'] = ((ball['w'] - last_ball['w']) / (i - b))
                     frame_state_vector.append(ball)
+
                     last_ball = ball
                     b = b + 1  # increment ball detection count
                 elif last_ball is None and ball_flag:
@@ -114,4 +116,4 @@ class StateVector:
             return det_object
 
         except KeyError:
-            return None
+            return det_object
