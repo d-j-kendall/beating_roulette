@@ -1,14 +1,40 @@
-
-import os
-import argparse
-import time
-import numpy as np
-
 import torch
-import torch.nn as nn
-import torch.optim as optim
+from anode.conv_models import ConvODENet
+from anode.models import *
+from anode.discrete_models import *
+from anode.training import *
 
+class RCModel:
+    def __init__(self,
+                 in_dim,
+                 hidden_dim,
+                 ):
+        self.x_ball_fun = ODENet(torch.device('cuda'), data_dim=in_dim,
+                                 hidden_dim=hidden_dim,
+                                 output_dim=1,
+                                 augment_dim=1,
+                                 time_dependent=True)
 
-class Predict(torch.nn.Module):
-    def __init__(self):
-        super(Predict, self).__init__()
+        self.y_ball_fun = ODENet(torch.device('cuda'), data_dim=in_dim,
+                                 hidden_dim=hidden_dim,
+                                 output_dim=1,
+                                 augment_dim=1,
+                                 time_dependent=True)
+
+        self.x_zero_fun = ODENet(torch.device('cuda'),
+                                 data_dim=in_dim,
+                                 hidden_dim=hidden_dim,
+                                 output_dim=1,
+                                 augment_dim=1,
+                                 time_dependent=True)
+
+        self.y_zero_fun = ODENet(torch.device('cuda'),
+                                 data_dim=in_dim,
+                                 hidden_dim=hidden_dim,
+                                 output_dim=1,
+                                 augment_dim=1,
+                                 time_dependent=True)
+
+    def get_models(self):
+        return self.x_ball_fun, self.y_ball_fun, self.x_zero_fun, self.y_zero_fun
+
