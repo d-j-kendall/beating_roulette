@@ -12,28 +12,24 @@ class RCModel:
         self.x_ball_fun = ODENet(torch.device('cuda'), data_dim=in_dim,
                                  hidden_dim=hidden_dim,
                                  output_dim=1,
-                                 augment_dim=1,
-                                 time_dependent=True)
+                                 time_dependent=False)
 
         self.y_ball_fun = ODENet(torch.device('cuda'), data_dim=in_dim,
                                  hidden_dim=hidden_dim,
                                  output_dim=1,
-                                 augment_dim=1,
-                                 time_dependent=True)
+                                 time_dependent=False)
 
         self.x_zero_fun = ODENet(torch.device('cuda'),
                                  data_dim=in_dim,
                                  hidden_dim=hidden_dim,
                                  output_dim=1,
-                                 augment_dim=1,
-                                 time_dependent=True)
+                                 time_dependent=False)
 
         self.y_zero_fun = ODENet(torch.device('cuda'),
                                  data_dim=in_dim,
                                  hidden_dim=hidden_dim,
                                  output_dim=1,
-                                 augment_dim=1,
-                                 time_dependent=True)
+                                 time_dependent=False)
 
     def get_models(self):
         return self.x_ball_fun, self.y_ball_fun, self.x_zero_fun, self.y_zero_fun
