@@ -9,10 +9,11 @@ class RCModel:
                  in_dim,
                  hidden_dim,
                  ):
-        self.x_ball_fun = ODENet(torch.device('cuda'), data_dim=in_dim,
+        self.x_ball_fun = ODENet(torch.device('cpu'), data_dim=in_dim,
                                  hidden_dim=hidden_dim,
-                                 output_dim=1,
-                                 time_dependent=False)
+                                 output_dim=2,
+                                 time_dependent=True,
+                                 adjoint=True)
 
         self.y_ball_fun = ODENet(torch.device('cuda'), data_dim=in_dim,
                                  hidden_dim=hidden_dim,

@@ -15,8 +15,13 @@ class StateVector:
         file_list = os.listdir(_dir)
         if not os.path.exists(dir_out):
             os.mkdir(dir_out)
+
         for file in file_list:
+            balls_list = []
+            zeros_list = []
             if file.endswith('.txt'):
+                ball_file = open(os.path.join(dir_out, 'ball-'+file), 'a+')
+                zero_file = open(os.path.join(dir_out, 'zero-'+file), 'a+')
                 spin = []
                 with open(os.path.join(_dir, file), 'r') as f:
                     last_ball, last_zero = None, None
@@ -40,28 +45,33 @@ class StateVector:
                                     assert False, "Malformed class type in json array, class should be 0 or 1 only"
 
                         if last_ball and ball:
-                            ball["xv"] = ball['x'] - last_ball['x']
-                            ball["yv"] = ball['y'] - last_ball['y']
+                            ball["xv"] = (ball['x'] - last_ball['x'])/time_step
+                            ball["yv"] = (ball['y'] - last_ball['y'])/time_step
                             ball['t'] = i*time_step
-                            frame.append(ball)
+                            ball_file.write(json.dumps(ball)+'\n')
 
                         if last_zero and zero:
-                            zero["xv"] = zero['x'] - last_zero['x']
-                            zero["yv"] = zero['y'] - last_zero['y']
+                            zero["xv"] = (zero['x'] - last_zero['x'])/time_step
+                            zero["yv"] = (zero['y'] - last_zero['y'])/time_step
                             zero['t'] = i*time_step
-                            frame.append(zero)
+                            zero_file.write(json.dumps(zero)+'\n')
 
                         last_ball = ball
                         last_zero = zero
-                        if len(frame) > 0:
-                            spin.append(frame)
+                        # with open(os.path.join(dir_out, 'balls'+file), 'w') as new_f:
+                        #     for ball in balls_list:
+                        #         new_f.write(json.dumps(ball) + '\n')
+                        #
+                        # with open(os.path.join(dir_out, 'zeros'+file), 'w') as new_f:
+                        #     for zero in zeros_list:
+                        #         new_f.write(json.dumps(zero) + '\n')
+                        # if len(frame) > 0:
+                        #     spin.append(frame)
                         i=i+1
                         det = f.readline()
 
-                with open(os.path.join(dir_out, file), 'w') as new_f:
-                    for frame in spin:
-                        new_f.write(json.dumps(frame)+'\n')
-
+                ball_file.close()
+                zero_file.close()
             else:
                 pass
 
