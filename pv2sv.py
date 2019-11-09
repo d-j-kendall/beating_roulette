@@ -5,14 +5,17 @@ import json
 class StateVector:
 
     def __init__(self, pred_model):
-        self.pred_model  # Predictive model network
+        self.last_ball = None
+        self.last_zero = None # Predictive model network
+        self.b = 0
+        self.z = 0
+        self.i = 0
 
     @staticmethod
-    def pv2sv(filein, fileout, x_center, y_center, DT):
+    def pv2sv(filein, fileout, x_center, y_center, result, DT):
+        spin_file = open(fileout, 'a+')
         last_ball, last_zero = None, None
         b, z, i = 0, 0, 0
-        new_spin = False
-        spin = []
         pos_file = open(filein, 'r')
         det = pos_file.readline()
         while det is not None:
@@ -42,7 +45,9 @@ class StateVector:
                     ball['w'] = (StateVector.rad_dist(ball['theta'], last_ball['theta']) / (DT*(i - b)))
                     if last_ball['w'] is not None:
                         ball['a'] = ((ball['w'] - last_ball['w']) / (DT*(i - b)))
-                    frame_state_vector.append(ball)
+
+                    if ball['a'] and ball['w'] is not None:
+                        frame_state_vector.append(ball)
 
                     last_ball = ball
                     b = b + 1  # increment ball detection count
@@ -56,7 +61,8 @@ class StateVector:
                     zero['w'] = ((StateVector.rad_dist(zero['theta'], last_zero['theta'])) / (DT*(i - z)))
                     if last_zero['w'] is not None:
                         last_zero['a'] = ((zero['w'] - last_zero['w']) / ((i - z)*DT))
-                    frame_state_vector.append(zero)
+                    if zero['a'] and zero['w'] is not None:
+                        frame_state_vector.append(zero)
                     last_zero = zero
                     z = z + 1
                 elif last_zero is None and zero_flag:
@@ -64,26 +70,9 @@ class StateVector:
                     z = z + 1
             else:
                 i = i + 1
-            end_spin_threshold = 0.1
-            # try:
-            #     omegas_exist = zero['w'] is not None and ball['w'] is not None
-            # except KeyError:
-            #     omegas_exist = False
-            try:
-                ball_zero_diff = abs(zero['w'] - ball['w'])
-            except TypeError:
-                ball_zero_diff = 1 + end_spin_threshold
 
-            if ball_zero_diff > 100 * end_spin_threshold:
-                new_spin = True
-            if new_spin:
-                spin.append(frame_state_vector)
-                if ball_flag and zero_flag and ball_zero_diff < end_spin_threshold:
-                    spin_file = open(f"{fileout}-{ball['theta']}-{zero['theta']}.txt", 'w')
-                    for vector in spin:
-                        spin_file.write(json.dumps(vector) + "\n")
-                    spin.clear()
-                    new_spin = False
+            if len(frame_state_vector) == 2:
+                spin_file.write(json.dumps(frame_state_vector) + "|"+str(result)+"\n")
             det = pos_file.readline()
 
     @staticmethod
