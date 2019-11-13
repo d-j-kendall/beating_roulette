@@ -5,7 +5,7 @@ import torch
 
 class StateVector:
 
-    def __init__(self, x_center, y_center,DT):
+    def __init__(self, x_center, y_center, DT):
         self.last_ball = None
         self.last_zero = None  #Predictive model network
         self.x_center = x_center
@@ -53,7 +53,7 @@ class StateVector:
                 zero = StateVector.to_polar(zero, self.x_center, self.y_center)
                 zero['w'] = ((StateVector.rad_dist(zero['theta'], self.last_zero['theta'])) / (self.DT*(self.i - self.z)))
                 if self.last_zero['w'] is not None:
-                    self.last_zero['a'] = ((zero['w'] - self.last_zero['w']) / ((self.i - self.z)*self.DT))
+                    zero['a'] = ((zero['w'] - self.last_zero['w']) / ((self.i - self.z)*self.DT))
                 if zero['a'] and zero['w'] is not None:
                     frame_state_vector.append(zero)
                 self.last_zero = zero
@@ -65,8 +65,7 @@ class StateVector:
             self.i = self.i + 1
 
         if len(frame_state_vector) == 2:
-            return torch.tensor([[frame_state_vector[0]['r'], frame_state_vector[0]['theta'], frame_state_vector[0]['w'], frame_state_vector[0]['a']],
-                                 [frame_state_vector[1]['r'], frame_state_vector[1]['theta'], frame_state_vector[1]['w'], frame_state_vector[1]['a']]])
+            return torch.tensor([frame_state_vector[0]['r'], frame_state_vector[0]['theta'], frame_state_vector[0]['w'], frame_state_vector[0]['a'], frame_state_vector[1]['r'], frame_state_vector[1]['theta'], frame_state_vector[1]['w'], frame_state_vector[1]['a']])
         else:
             return None
 
@@ -140,12 +139,8 @@ class StateVector:
     def to_polar(det_object, x_center, y_center):
         #  Calculate midpoint
         try:
-            x1 = det_object.pop('x1')
-            x2 = det_object.pop('x2')
-            y1 = det_object.pop('y1')
-            y2 = det_object.pop('y2')
-            x = (x1 + x2) / 2 - x_center
-            y = (y1 + y2) / 2 - y_center
+            x = det_object.pop('x') - x_center
+            y = det_object.pop('y') - y_center
             r = (x ** 2 + y ** 2) ** (1 / 2)
             if x > 0:
                 if y >= 0:
