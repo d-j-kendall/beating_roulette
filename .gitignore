@@ -4,3 +4,4 @@ Examples/vgg-19/dustin/Cat_Dog_data/
 YOLOv3/
 .idea/
 /.project
+*__pycache__*
