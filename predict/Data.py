@@ -1,4 +1,6 @@
 import torch.utils.data as data
+import torch
+import json
 
 class PVdataset(data.Dataset):
 
@@ -87,5 +89,31 @@ class StateData(data.Dataset):
     def __init__(self, train_file):
         super(data.Dataset, self)
         self.tensor = None
+        self.file_name = train_file
+        self.load_data()
+
+    def __len__(self):
+        return int(self.tensor.shape[1])
+
+    def __getitem__(self, item):
+        return self.tensor[item, 0:8], self.tensor[item, 9]
+
+    def load_data(self):
+        with open(self.file_name, 'r') as df:
+            tens = StateData.get_tensor_for_line(df.readline())
+            while tens is not None:
+                torch.cat((tens, StateData.get_tensor_for_line(df.readline())), 0)
+
+    @staticmethod
+    def get_tensor_for_line(line):
+        if len(line)>0:
+            line = line.split('|')
+            det = json.loads(line[0])
+            result = int(line[1])
+            return torch.tensor([[det[0]['r'], det[0]['theta'], det[0]['w'], det[0]['a'], det[1]['r'], det[1]['theta'], det[1]['w'], det[1]['a'], result]])
+        else:
+            return None
+
+
 
 

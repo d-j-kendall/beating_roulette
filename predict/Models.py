@@ -29,3 +29,6 @@ class Prediction(nn.Module):
         x = self.linear3(x)
         x = nn.LogSigmoid()(x)
         return x
+
+
+class AnodePrediction(nn.Module)
