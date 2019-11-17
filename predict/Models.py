@@ -31,4 +31,5 @@ class Prediction(nn.Module):
         return x
 
 
-class AnodePrediction(nn.Module)
+class AnodePrediction(nn.Module):
+    pass
