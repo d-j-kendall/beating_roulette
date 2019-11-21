@@ -120,7 +120,7 @@ class StateVector:
                     zero = StateVector.to_polar(zero, x_center, y_center)
                     zero['w'] = ((StateVector.rad_dist(zero['theta'], last_zero['theta'])) / (DT*(i - z)))
                     if last_zero['w'] is not None:
-                        last_zero['a'] = ((zero['w'] - last_zero['w']) / ((i - z)*DT))
+                        zero['a'] = ((zero['w'] - last_zero['w']) / ((i - z)*DT))
                     if zero['a'] and zero['w'] is not None:
                         frame_state_vector.append(zero)
                     last_zero = zero

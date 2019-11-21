@@ -48,18 +48,21 @@ class AnodePrediction:
 
         self.optimizer = torch.optim.Adam(self.ode.parameters(), lr=1e-3)
         self.trained_params = trained_params
-        self.trainer = Trainer(self.ode,self.optimizer, torch.device('cuda'))
+        self.trainer = Trainer(self.ode, self.optimizer, torch.device('cuda'))
         self.data_loader = None
 
         if len(trained_params)>0:
-            self.ode.load_state_dict(torch.load(self.trained_params))
+            try:
+                self.ode.load_state_dict(torch.load(self.trained_params))
+            except FileNotFoundError:
+                print('File Not Found')
 
     def train(self, epochs=10):
         self.trainer.train(self.data_loader, epochs)
         torch.save(self.ode, self.trained_params)
 
-    def set_data_loader(self, training_set):
-        self.data_loader = data.DataLoader(StateData(training_set), batch_size=20, shuffle=True, num_workers=20)
+    def set_data_loader(self, data_loader):
+        self.data_loader = data_loader
 
 
 

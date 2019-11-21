@@ -68,6 +68,7 @@ class Trainer():
         num_epochs : int
         """
         for epoch in range(num_epochs):
+            print('It is training %s' % epoch)
             avg_loss = self._train_epoch(data_loader)
             if self.verbose:
                 print("Epoch {}: {:.3f}".format(epoch + 1, avg_loss))

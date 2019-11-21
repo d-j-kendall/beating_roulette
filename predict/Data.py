@@ -96,17 +96,24 @@ class StateData(data.Dataset):
         return int(self.tensor.shape[1])
 
     def __getitem__(self, item):
-        return self.tensor[item, 0:8], self.tensor[item, 9]
+        return self.tensor[item, 0:7], self.tensor[item, 8]
 
     def load_data(self):
         with open(self.file_name, 'r') as df:
-            tens = StateData.get_tensor_for_line(df.readline())
-            while tens is not None:
-                torch.cat((tens, StateData.get_tensor_for_line(df.readline())), 0)
+            self.tensor = StateData.get_tensor_for_line(df.readline())
+            while self.tensor is not None:
+                tens = StateData.get_tensor_for_line(df.readline())
+                if tens is not None:
+                    self.tensor = torch.cat((self.tensor, tens), 0)
+                else:
+                    break
+
+    def to_device(self):
+        self.tensor.to_device('cuda')
 
     @staticmethod
     def get_tensor_for_line(line):
-        if len(line)>0:
+        if len(line) > 0:
             line = line.split('|')
             det = json.loads(line[0])
             result = int(line[1])
