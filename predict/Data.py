@@ -96,7 +96,7 @@ class StateData(data.Dataset):
         return int(self.tensor.shape[1])
 
     def __getitem__(self, item):
-        return self.tensor[item, 0:7], self.tensor[item, 8]
+        return self.tensor[:, :, item, 0:7], self.tensor[:, :, item, 8]
 
     def load_data(self):
         with open(self.file_name, 'r') as df:
@@ -117,10 +117,50 @@ class StateData(data.Dataset):
             line = line.split('|')
             det = json.loads(line[0])
             result = int(line[1])
+            if result == 0:
+                result = -1
             return torch.tensor([[det[0]['r'], det[0]['theta'], det[0]['w'], det[0]['a'], det[1]['r'], det[1]['theta'], det[1]['w'], det[1]['a'], result]])
         else:
             return None
 
 
+class StateData2(data.Dataset):
 
+
+    def __init__(self, train_file):
+        super(data.Dataset, self)
+        self.tensor = None
+        self.file_name = train_file
+        self.load_data()
+
+    def __len__(self):
+        return int(self.tensor.shape[1])
+
+    def __getitem__(self, item):
+        return self.tensor[item, 0:4], self.tensor[item, 5]
+
+    def load_data(self):
+        with open(self.file_name, 'r') as df:
+            self.tensor = StateData.get_tensor_for_line(df.readline())
+            while self.tensor is not None:
+                tens = StateData.get_tensor_for_line(df.readline())
+                if tens is not None:
+                    self.tensor = torch.cat((self.tensor, tens), 0)
+                else:
+                    break
+
+    def to_device(self):
+        self.tensor.to_device('cuda')
+
+    @staticmethod
+    def get_tensor_for_line(line):
+        if len(line) > 0:
+            line = line.split('|')
+            det = json.loads(line[0])
+            result = int(line[1])
+            if result == 0:
+                result = -1
+            return torch.tensor([[det[0]['theta'], det[0]['w'], det[1]['theta'], det[1]['w'], 0.0, result]])
+        else:
+            return None
 
