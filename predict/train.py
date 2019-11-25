@@ -1,19 +1,19 @@
 import anode
 import torch
 from torch.utils.data import dataloader
-from predict.Data import StateData, StateData2
-from predict.Models import AnodePrediction, ConvAnodePrediction, ReducedAnodePrediction
+from predict.Data import StateData
+from predict.Models import AnodePrediction
 
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
-data_set = StateData2('../training_data.txt')
+data_set = StateData('../training_data2.txt')
 
-data_loader = dataloader.DataLoader(data_set, batch_size=120, shuffle=True, num_workers=0)
+data_loader = dataloader.DataLoader(data_set, batch_size=10, shuffle=True, num_workers=0)
 
-model = ReducedAnodePrediction('reduced.pd')
+model = AnodePrediction('first_run.pd')
 
 model.set_data_loader(data_loader)
 
-model.train(300)
+model.train(100)
 
 
 
