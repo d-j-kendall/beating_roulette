@@ -1,3 +1,5 @@
+Use `git clone --recurse-submodules -j8` to clone repo and UltralyticsYoloV3 Fork
+
 # Beating Roulette
 Designing a neural network to predict outcomes in roulette.
 
